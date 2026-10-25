@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Lucky Straw Adventure: Vocabulary & Story Quest</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            /* Using your exact BACKGROUND.png as the main page background */
+            background: url('BACKGROUND.png') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-10vh) translateX(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(105vh) translateX(50px) rotate(360deg); opacity: 0.8; }
+        }
+        .petal {
+            position: fixed;
+            background-color: #ffb7c5;
+            border-radius: 150% 0 150% 0;
+            animation: fall linear infinite;
+            z-index: 2;
+            pointer-events: none;
+            box-shadow: 0 0 5px rgba(255, 183, 197, 0.8);
+        }
+    </style>
+</head>
+<body class="relative text-gray-800 pb-16">
+
+    <!-- Falling Petals Background Effect -->
+    <div id="petals-container"></div>
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-pink-500/90 via-rose-500/90 to-amber-500/90 backdrop-blur-md text-white shadow-lg py-6 px-4 relative z-10">
+        <div class="max-w-5xl mx-auto text-center">
+            <span class="bg-white/20 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-2 inline-block">Interactive Learning Quest</span>
+            <h1 class="text-3xl md:text-5xl font-extrabold tracking-wide drop-shadow-md">🌸 The Lucky Straw Adventure 🌸</h1>
+            <p class="text-pink-100 mt-2 text-sm md:text-base font-medium">Horizontal vocabulary explorer, trade challenge, and story & UAE connection review quiz!</p>
+        </div>
+    </header>
+
+    <!-- Navigation Tabs -->
+    <div class="max-w-4xl mx-auto px-4 mt-6 relative z-10">
+        <div class="flex flex-wrap justify-center gap-2 bg-white/90 backdrop-blur-md p-2 rounded-2xl shadow-lg border border-pink-100">
+            <button onclick="switchTab('vocab')" id="btn-vocab" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm md:text-base transition-all bg-rose-500 text-white shadow-md">📚 Horizontal Vocabulary</button>
+            <button onclick="switchTab('game')" id="btn-game" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm md:text-base transition-all bg-white/80 text-gray-700 hover:bg-pink-100">🎮 Trade-Up Challenge</button>
+            <button onclick="switchTab('quiz')" id="btn-quiz" class="tab-btn px-5 py-2.5 rounded-xl font-bold text-sm md:text-base transition-all bg-white/80 text-gray-700 hover:bg-pink-100">🧠 Story & UAE Quiz</button>
+        </div>
+    </div>
+
+    <main class="max-w-5xl mx-auto px-4 mt-8 relative z-10">
+
+        <!-- SECTION 1: HORIZONTAL STEP-BY-STEP VOCABULARY -->
+        <section id="tab-vocab" class="space-y-6">
+            <div class="text-center">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-rose-700 bg-white/80 backdrop-blur-sm py-2 px-6 rounded-2xl inline-block shadow-md">Horizontal Story Vocabulary Journey</h2>
+                <p class="text-gray-900 font-semibold text-sm md:text-base mt-2 bg-white/70 backdrop-blur-sm py-1 px-4 rounded-xl inline-block">Look at the story pictures one by one, reveal the word, and use the arrow buttons to move!</p>
+            </div>
+
+            <!-- Horizontal Container Card -->
+            <div class="bg-white/95 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-2xl border-2 border-pink-200 max-w-xl mx-auto relative">
+                <div class="flex justify-between items-center mb-4">
+                    <span id="vocab-progress-badge" class="bg-pink-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow">Word 1 of 8</span>
+                    <span id="vocab-score-badge" class="text-rose-600 font-bold text-sm">Unlocked: 0 / 8</span>
+                </div>
+
+                <!-- Picture Frame -->
+                <div class="overflow-hidden rounded-2xl mb-6 h-64 border-2 border-pink-100 shadow-inner bg-pink-50 flex items-center justify-center">
+                    <img id="vocab-img" src="" alt="Vocabulary Illustration" onerror="this.src='https://images.unsplash.com/photo-1531306728370-e2ebd9d7bb99?auto=format&fit=crop&w=600&q=80'" class="w-full h-full object-cover transition-transform duration-500 hover:scale-105">
+                </div>
+
+                <!-- Word Reveal / Guess Box -->
+                <div id="vocab-action-area" class="text-center mb-5">
+                    <!-- Injected dynamically -->
+                </div>
+
+                <!-- Meaning & Example -->
+                <div class="bg-pink-50/80 border border-pink-100 rounded-2xl p-4 mb-4 text-center">
+                    <p class="text-gray-800 text-base mb-2"><strong>Meaning:</strong> <span id="vocab-def"></span></p>
+                    <p class="text-gray-700 text-sm italic mb-3">"<span id="vocab-example"></span>"</p>
+                    <div class="bg-white border border-pink-200 rounded-xl p-2.5 text-xs text-rose-800 font-semibold inline-block shadow-sm">
+                        🎬 <strong>Action:</strong> <span id="vocab-action"></span>
+                    </div>
+                </div>
+
+                <!-- Navigation Controls -->
+                <div class="flex justify-between items-center mt-6 pt-4 border-t border-gray-100">
+                    <button onclick="prevVocabWord()" id="prev-vocab-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-5 rounded-xl text-sm transition-all shadow-sm">◀ Previous</button>
+                    <button onclick="nextVocabWord()" id="next-vocab-btn" class="bg-rose-500 hover:bg-rose-600 text-white font-bold py-2 px-6 rounded-xl text-sm transition-all shadow-md">Next Word ➔</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 2: GAME -->
+        <section id="tab-game" class="hidden space-y-6">
+            <div class="text-center">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-amber-700 bg-white/80 backdrop-blur-sm py-2 px-6 rounded-2xl inline-block shadow-md">🎮 The Great Trade-Up Challenge</h2>
+                <p class="text-gray-900 font-semibold text-sm md:text-base mt-2 bg-white/70 backdrop-blur-sm py-1 px-4 rounded-xl inline-block">Read the story scenario and pick the matching vocabulary word!</p>
+            </div>
+            <div class="bg-white/95 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-xl border-2 border-amber-200 max-w-2xl mx-auto text-center">
+                <div class="flex justify-between items-center mb-4 text-sm font-bold text-gray-500">
+                    <span id="game-progress">Scenario 1 of 8</span>
+                    <span id="game-score" class="text-amber-600 bg-amber-50 px-3 py-1 rounded-full">Score: 0 / 8</span>
+                </div>
+                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-6 mb-6 shadow-inner">
+                    <p id="game-scenario" class="text-lg md:text-xl font-medium text-gray-800"></p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3" id="game-options"></div>
+                <div id="game-feedback" class="mt-4 text-base font-bold hidden"></div>
+                <button id="next-scenario-btn" onclick="nextScenario()" class="mt-6 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all hidden">Next Scenario ➔</button>
+            </div>
+        </section>
+
+        <!-- SECTION 3: QUIZ (Mr. Lucky Straw + UAE Relatable Questions) -->
+        <section id="tab-quiz" class="hidden space-y-6">
+            <div class="text-center">
+                <h2 class="text-2xl md:text-3xl font-extrabold text-purple-700 bg-white/80 backdrop-blur-sm py-2 px-6 rounded-2xl inline-block shadow-md">🧠 Story & UAE Connections Quiz</h2>
+                <p class="text-gray-900 font-semibold text-sm md:text-base mt-2 bg-white/70 backdrop-blur-sm py-1 px-4 rounded-xl inline-block">Test your knowledge on Shobei's journey and Emirati traditions!</p>
+            </div>
+            <div class="bg-white/95 backdrop-blur-md rounded-3xl p-6 md:p-8 shadow-xl border-2 border-purple-200 max-w-3xl mx-auto">
+                <div class="flex justify-between items-center mb-4 text-sm font-bold text-gray-500">
+                    <span id="quiz-progress">Question 1 of 9</span>
+                    <span id="quiz-score" class="text-purple-600 bg-purple-50 px-3 py-1 rounded-full">Score: 0 / 9</span>
+                </div>
+                <div class="bg-purple-50 border border-purple-200 rounded-2xl p-6 mb-6">
+                    <span id="quiz-category" class="text-xs font-bold uppercase tracking-wider text-purple-500 bg-white px-2.5 py-1 rounded-md border border-purple-100 inline-block mb-2"></span>
+                    <p id="quiz-question" class="text-lg md:text-xl font-semibold text-gray-800"></p>
+                </div>
+                <div class="space-y-3" id="quiz-options"></div>
+                <div id="quiz-explanation" class="mt-4 p-4 rounded-xl text-sm font-medium hidden"></div>
+                <div class="flex justify-end mt-6">
+                    <button id="next-quiz-btn" onclick="nextQuizQuestion()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all hidden">Next Question ➔</button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Falling Petals Generation
+        const petalsContainer = document.getElementById('petals-container');
+        for (let i = 0; i < 35; i++) {
+            const petal = document.createElement('div');
+            petal.className = 'petal';
+            petal.style.left = `${Math.random() * 100}vw`;
+            petal.style.top = `-${Math.random() * 20}vh`;
+            const size = Math.random() * 12 + 10;
+            petal.style.width = `${size}px`;
+            petal.style.height = `${size * 1.4}px`;
+            petal.style.animationDuration = `${Math.random() * 6 + 4}s`;
+            petal.style.animationDelay = `${Math.random() * 5}s`;
+            petalsContainer.appendChild(petal);
+        }
+
+        // Vocabulary Data with exact local filenames matching your folder
+        const vocabData = [
+            { 
+                word: "tumbled", 
+                def: "Fell downwards, hitting the ground several times.", 
+                example: "Shobei tumbled down the grassy hill.", 
+                action: "Roll hands in circles like rolling down a hill!", 
+                img: "Tumbled.png" 
+            },
+            { 
+                word: "worthless", 
+                def: "Having no value at all.", 
+                example: "At first, a piece of dry straw seemed completely worthless.", 
+                action: "Cross arms in an 'X' shape!", 
+                img: "Worthless.png" 
+            },
+            { 
+                word: "dragonfly", 
+                def: "An insect with a long body and two pairs of wings.", 
+                example: "He caught a dragonfly to keep the crying baby happy.", 
+                action: "Flutter hands like wings in the air!", 
+                img: "DRAGON FLY.png" 
+            },
+            { 
+                word: "peddler", 
+                def: "A person who travels from place to place trying to sell small objects.", 
+                example: "Shobei traveled as a peddler with his goods.", 
+                action: "Pretend to carry a heavy basket on your shoulders!", 
+                img: "pedler.png" 
+            },
+            { 
+                word: "attendants", 
+                def: "People who live and travel with an important person.", 
+                example: "The wealthy noblewoman traveled with her attendants.", 
+                action: "Stand straight and bow politely!", 
+                img: "Attendants.png" 
+            },
+            { 
+                word: "prosperous", 
+                def: "Rich and successful.", 
+                example: "By the end of the story, Shobei became prosperous.", 
+                action: "Make a big money bags sign with your hands!", 
+                img: "Prosperous.png .png" 
+            },
+            { 
+                word: "amazed", 
+                def: "Very surprised.", 
+                example: "Shobei was amazed when he opened the treasure chest.", 
+                action: "Drop your jaw open in total shock!", 
+                img: "Amazed .png" 
+            },
+            { 
+                word: "addressed", 
+                def: "Used a particular name to speak to someone.", 
+                example: "The horseman addressed Shobei by his name.", 
+                action: "Point forward as if calling someone by name!", 
+                img: "Addressed.png" 
+            }
+        ];
+
+        const gameScenarios = [
+            { scenario: "While running down the grassy hill, Shobei tripped and fell downwards, hitting the ground several times!", answer: "tumbled" },
+            { scenario: "At first, people thought a simple piece of dry grass was completely useless and had no value.", answer: "worthless" },
+            { scenario: "Shobei caught an insect with a long body and two pairs of wings to keep a crying baby quiet.", answer: "dragonfly" },
+            { scenario: "Shobei walked from village to village trying to sell small items as a traveling merchant.", answer: "peddler" },
+            { scenario: "The noblewoman was surrounded by royal helpers who lived and traveled everywhere with her.", answer: "attendants" },
+            { scenario: "Because of his clever trades, Shobei became very rich, successful, and well-off.", answer: "prosperous" },
+            { scenario: "Shobei's eyes went wide with wonder when he saw the giant chest full of gold and jewels!", answer: "amazed" },
+            { scenario: "The traveler spoke directly to him using his personal name: 'Shobei!'", answer: "addressed" }
+        ];
+
+        // Quiz Data: Story Questions + Relatable UAE Connection Questions
+        const quizData = [
+            {
+                category: "Story Question 1",
+                question: "What did Shobei find when he stopped tumbling?",
+                options: ["A bag of gold coins", "A piece of straw", "An orange", "A dragonfly"],
+                correct: 1,
+                explanation: "Correct! When Shobei stopped tumbling down the hill, he found a piece of straw."
+            },
+            {
+                category: "Story Question 2",
+                question: "How did Shobei ensure the dragonfly did not bother him?",
+                options: ["He tied it to a piece of straw", "He swatted it away", "He let it go outside", "He put it in a box"],
+                correct: 0,
+                explanation: "Correct! He caught the dragonfly and tied it gently to the piece of straw."
+            },
+            {
+                category: "Story Question 3",
+                question: "Why did the boy’s mother give Shobei three oranges?",
+                options: ["She wanted to sell them", "She traded them because the buzzing dragonfly kept her crying baby happy and amused", "She owed him a favor", "She found them on the road"],
+                correct: 1,
+                explanation: "Correct! The buzzing dragonfly amused her crying baby, so she gratefully traded three oranges for it."
+            },
+            {
+                category: "Story Question 4",
+                question: "Why did Shobei feel sorry for the peddler?",
+                options: ["Because the peddler was carrying too many heavy oranges and was thirsty", "Because he lost his house", "Because he lost his horse", "Because he had no family"],
+                correct: 0,
+                explanation: "Correct! He shared his oranges with the exhausted, thirsty traveler."
+            },
+            {
+                category: "Story Question 5",
+                question: "Where was the princess / noblewoman going?",
+                options: ["To town", "To the mountains", "Across the sea", "To the temple"],
+                correct: 0,
+                explanation: "Correct! She was traveling with her attendants to town."
+            },
+            {
+                category: "Story Question 6",
+                question: "What amazed the villagers?",
+                options: ["Seeing Shobei return as a prosperous man with immense wealth", "Seeing a giant dragonfly", "Seeing a flying horse", "Seeing a lost straw"],
+                correct: 0,
+                explanation: "Correct! The villagers were amazed to see Shobei return wealthy and prosperous."
+            },
+            {
+                category: "UAE Connection 1",
+                question: "Just like Shobei traveled from place to place as a peddler trading goods, what were the traditional wooden sailing vessels used by Emirati pearl divers and merchants to travel across the sea?",
+                options: ["Speedboats", "Dhows", "Gondolas", "Submarines"],
+                correct: 1,
+                explanation: "Correct! Dhows are the traditional wooden trading vessels deeply rooted in UAE maritime history."
+            },
+            {
+                category: "UAE Connection 2",
+                question: "Shobei started with a simple, 'worthless' piece of straw and used clever resourcefulness to succeed. In the UAE before oil, what did ancestors use to build summer houses called 'Arish'?",
+                options: ["Glass and steel", "Palm fronds and mud", "Bricks and marble", "Plastic sheets"],
+                correct: 1,
+                explanation: "Correct! 'Arish' houses show incredible resourcefulness using local natural environment materials."
+            },
+            {
+                category: "UAE Connection 3",
+                question: "Shobei was kind and shared with travelers. In the UAE, what is the famous cultural value of welcoming guests and travelers with open arms, dates, and Arabic coffee (gahwa) called?",
+                options: ["Speed", "Hospitality and Generosity (Karam)", "Competition", "Silence"],
+                correct: 1,
+                explanation: "Correct! Generosity and hospitality (Karam) are foundational values across the United Arab Emirates."
+            }
+        ];
+
+        // Step-by-Step Horizontal Vocabulary Logic
+        let currentVocabIndex = 0;
+        let unlockedWords = new Set();
+
+        function loadVocabCard() {
+            const item = vocabData[currentVocabIndex];
+            document.getElementById('vocab-progress-badge').innerText = `Word ${currentVocabIndex + 1} of ${vocabData.length}`;
+            document.getElementById('vocab-score-badge').innerText = `Unlocked: ${unlockedWords.size} / ${vocabData.length}`;
+            
+            const imgEl = document.getElementById('vocab-img');
+            imgEl.src = item.img;
+            
+            document.getElementById('vocab-def').innerText = item.def;
+            document.getElementById('vocab-example').innerText = item.example;
+            document.getElementById('vocab-action').innerText = item.action;
+
+            const actionArea = document.getElementById('vocab-action-area');
+            if (unlockedWords.has(currentVocabIndex)) {
+                actionArea.innerHTML = `<h3 class="text-3xl font-extrabold text-rose-600 uppercase tracking-wide animate-pulse">${item.word}</h3><span class="text-xs text-green-600 font-bold">✔ Unlocked!</span>`;
+            } else {
+                actionArea.innerHTML = `<button onclick="revealCurrentWord('${item.word}')" class="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold py-2 px-6 rounded-xl text-sm transition-all shadow-sm">🔍 Tap to Reveal Word</button>`;
+            }
+
+            document.getElementById('prev-vocab-btn').style.visibility = currentVocabIndex === 0 ? 'hidden' : 'visible';
+            document.getElementById('next-vocab-btn').innerText = currentVocabIndex === vocabData.length - 1 ? 'Finish Journey ➔' : 'Next Word ➔';
+        }
+
+        function revealCurrentWord(word) {
+            unlockedWords.add(currentVocabIndex);
+            loadVocabCard();
+        }
+
+        function nextVocabWord() {
+            if (currentVocabIndex < vocabData.length - 1) {
+                currentVocabIndex++;
+                loadVocabCard();
+            } else {
+                alert("🎉 Amazing job! You completed the entire vocabulary journey!");
+            }
+        }
+
+        function prevVocabWord() {
+            if (currentVocabIndex > 0) {
+                currentVocabIndex--;
+                loadVocabCard();
+            }
+        }
+
+        // Tab Switching
+        function switchTab(tab) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.remove('bg-rose-500', 'text-white', 'shadow-md', 'bg-amber-500', 'bg-purple-600');
+                b.classList.add('bg-white/80', 'text-gray-700');
+            });
+
+            document.getElementById(`tab-${tab}`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`btn-${tab}`);
+            activeBtn.classList.remove('bg-white/80', 'text-gray-700');
+            
+            if(tab === 'vocab') {
+                activeBtn.classList.add('bg-rose-500', 'text-white', 'shadow-md');
+                loadVocabCard();
+            }
+            if(tab === 'game') {
+                activeBtn.classList.add('bg-amber-500', 'text-white', 'shadow-md');
+                initGame();
+            }
+            if(tab === 'quiz') {
+                activeBtn.classList.add('bg-purple-600', 'text-white', 'shadow-md');
+                initQuiz();
+            }
+        }
+
+        // Game Logic
+        let currentGameIndex = 0;
+        let gameScore = 0;
+        let gameAnswered = false;
+
+        function initGame() {
+            currentGameIndex = 0;
+            gameScore = 0;
+            gameAnswered = false;
+            loadGameScenario();
+        }
+
+        function loadGameScenario() {
+            gameAnswered = false;
+            const scenario = gameScenarios[currentGameIndex];
+            document.getElementById('game-progress').innerText = `Scenario ${currentGameIndex + 1} of ${gameScenarios.length}`;
+            document.getElementById('game-score').innerText = `Score: ${gameScore} / ${gameScenarios.length}`;
+            document.getElementById('game-scenario').innerText = scenario.scenario;
+            document.getElementById('game-feedback').classList.add('hidden');
+            document.getElementById('next-scenario-btn').classList.add('hidden');
+
+            let options = [scenario.answer];
+            while(options.length < 4) {
+                let randomWord = vocabData[Math.floor(Math.random() * vocabData.length)].word;
+                if(!options.includes(randomWord)) options.push(randomWord);
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            const optionsContainer = document.getElementById('game-options');
+            optionsContainer.innerHTML = '';
+            options.forEach(opt => {
+                optionsContainer.innerHTML += `
+                    <button onclick="checkGameAnswer(this, '${opt}', '${scenario.answer}')" class="game-opt-btn bg-white border-2 border-amber-200 hover:border-amber-400 text-gray-800 font-bold py-3 px-4 rounded-xl shadow-sm transition-all text-center capitalize">${opt}</button>
+                `;
+            });
+        }
+
+        function checkGameAnswer(button, selected, correct) {
+            if(gameAnswered) return;
+            gameAnswered = true;
+
+            const feedback = document.getElementById('game-feedback');
+            feedback.classList.remove('hidden');
+
+            if(selected === correct) {
+                button.classList.remove('bg-white', 'border-amber-200');
+                button.classList.add('bg-green-500', 'text-white', 'border-green-600');
+                feedback.innerHTML = `<span class="text-green-600">🎉 Correct! Great job matching the word!</span>`;
+                gameScore++;
+            } else {
+                button.classList.remove('bg-white', 'border-amber-200');
+                button.classList.add('bg-red-500', 'text-white', 'border-red-600');
+                feedback.innerHTML = `<span class="text-red-600">❌ Not quite! The correct word was <strong>${correct}</strong>.</span>`;
+            }
+
+            document.getElementById('game-score').innerText = `Score: ${gameScore} / ${gameScenarios.length}`;
+            document.getElementById('next-scenario-btn').classList.remove('hidden');
+        }
+
+        function nextScenario() {
+            currentGameIndex++;
+            if(currentGameIndex < gameScenarios.length) {
+                loadGameScenario();
+            } else {
+                document.getElementById('tab-game').innerHTML = `
+                    <div class="bg-white/95 backdrop-blur-md rounded-3xl p-8 shadow-xl border-2 border-amber-200 max-w-xl mx-auto text-center space-y-4">
+                        <h3 class="text-3xl font-bold text-amber-600">🏆 Challenge Complete! 🏆</h3>
+                        <p class="text-lg text-gray-700">You scored <strong>${gameScore}</strong> out of <strong>${gameScenarios.length}</strong>!</p>
+                        <div class="text-4xl">🌟🌸✨</div>
+                        <button onclick="initGame()" class="bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all">Play Again ↺</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Quiz Logic
+        let currentQuizIndex = 0;
+        let quizScore = 0;
+        let quizAnswered = false;
+
+        function initQuiz() {
+            currentQuizIndex = 0;
+            quizScore = 0;
+            quizAnswered = false;
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            quizAnswered = false;
+            const q = quizData[currentQuizIndex];
+            document.getElementById('quiz-progress').innerText = `Question ${currentQuizIndex + 1} of ${quizData.length}`;
+            document.getElementById('quiz-score').innerText = `Score: ${quizScore} / ${quizData.length}`;
+            document.getElementById('quiz-category').innerText = q.category;
+            document.getElementById('quiz-question').innerText = q.question;
+            document.getElementById('quiz-explanation').classList.add('hidden');
+            document.getElementById('next-quiz-btn').classList.add('hidden');
+
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+            q.options.forEach((opt, idx) => {
+                optionsContainer.innerHTML += `
+                    <button onclick="checkQuizAnswer(this, ${idx}, ${q.correct})" class="quiz-opt-btn w-full text-left bg-white border-2 border-purple-200 hover:border-purple-400 text-gray-800 font-medium py-3 px-4 rounded-xl shadow-sm transition-all">${opt}</button>
+                `;
+            });
+        }
+
+        function checkQuizAnswer(button, selected, correct) {
+            if(quizAnswered) return;
+            quizAnswered = true;
+
+            const explanation = document.getElementById('quiz-explanation');
+            explanation.classList.remove('hidden');
+
+            const allButtons = document.querySelectorAll('.quiz-opt-btn');
+            allButtons.forEach((btn, idx) => {
+                if(idx === correct) {
+                    btn.classList.remove('bg-white', 'border-purple-200');
+                    btn.classList.add('bg-green-100', 'border-green-500', 'text-green-800', 'font-bold');
+                }
+            });
+
+            if(selected === correct) {
+                button.classList.remove('bg-white', 'border-purple-200');
+                button.classList.add('bg-green-500', 'text-white', 'border-green-600', 'font-bold');
+                explanation.className = "mt-4 p-4 rounded-xl text-sm font-medium bg-green-50 text-green-800 border border-green-200";
+                explanation.innerHTML = `✅ <strong>Correct!</strong> ${quizData[currentQuizIndex].explanation}`;
+                quizScore++;
+            } else {
+                button.classList.remove('bg-white', 'border-purple-200');
+                button.classList.add('bg-red-500', 'text-white', 'border-red-600', 'font-bold');
+                explanation.className = "mt-4 p-4 rounded-xl text-sm font-medium bg-red-50 text-red-800 border border-red-200";
+                explanation.innerHTML = `❌ <strong>Not quite!</strong> ${quizData[currentQuizIndex].explanation}`;
+            }
+
+            document.getElementById('quiz-score').innerText = `Score: ${quizScore} / ${quizData.length}`;
+            document.getElementById('next-quiz-btn').classList.remove('hidden');
+        }
+
+        function nextQuizQuestion() {
+            currentQuizIndex++;
+            if(currentQuizIndex < quizData.length) {
+                loadQuizQuestion();
+            } else {
+                document.getElementById('tab-quiz').innerHTML = `
+                    <div class="bg-white/95 backdrop-blur-md rounded-3xl p-8 shadow-xl border-2 border-purple-200 max-w-xl mx-auto text-center space-y-4">
+                        <h3 class="text-3xl font-bold text-purple-600">🎉 Quiz Completed! 🎉</h3>
+                        <p class="text-lg text-gray-700">You scored <strong>${quizScore}</strong> out of <strong>${quizData.length}</strong>!</p>
+                        <div class="text-4xl">🏆🌟🧠</div>
+                        <button onclick="initQuiz()" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg transition-all">Try Again ↺</button>
+                    </div>
+                `;
+            }
+        }
+
+        // Initialize Vocabulary tab on load
+        window.onload = () => {
+            switchTab('vocab');
+        };
+    </script>
+</body>
+</html>
